@@ -1,0 +1,35 @@
+version: "3.7"
+
+networks:
+  myapp:
+    driver: bridge
+
+services:
+  codeeditor:
+    container_name: codeEditor
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    links:
+      - mongobase
+    networks:
+      - myapp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - env.list
+  mongobase:
+    container_name: mongobase
+    hostname: mongobase
+    image: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - myapp
+
+volumes:
+  mongodbdata:
+    driver: local
