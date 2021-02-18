@@ -25,6 +25,7 @@ jobs:
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
           script: |
+            cd /var/www/codetalk
             docker-compose stop
             docker-compose build
             docker-compose up -d
