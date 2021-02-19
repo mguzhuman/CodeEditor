@@ -82,16 +82,15 @@ io.on('connection', async (socket) => {
         }
 
         request('http://localhost:8088/run', options, async (err, response, body) => {
+            console.log(body)
             let responseValue;
             if (!err) {
-                responseValue = body.error ? body.message : body.stderr ? body.stderr : body.stdout
+                responseValue = body.stderr ? body.stderr : body.error ? body.message : body.stdout
             } else {
                 responseValue = err.err;
             }
-            const room = await Room.findOne({id:data.id});
-            room.response =  room.response ? room.response + "\n" + responseValue : responseValue
-            await room.save();
-            io.in(data.id).emit("returnResponseRunCode", room.response);
+             await Room.findOneAndUpdate({id:data.id},{response:responseValue});
+            io.in(data.id).emit("returnResponseRunCode", responseValue);
         })
     })
 

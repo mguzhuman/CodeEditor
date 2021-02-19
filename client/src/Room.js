@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/monokai.css';
 import {makeStyles} from "@material-ui/core/styles";
-import {useParams, Link} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
@@ -52,14 +52,14 @@ const useStyles = makeStyles({
     label: {
         display: 'inline-flex',
         paddingLeft: 50,
-        alignItems:'center'
+        alignItems: 'center'
     },
     selectInput: {
-        margin:20,
-        marginLeft:50,
+        margin: 20,
+        marginLeft: 50,
         minWidth: 200,
     },
-    headerContainer:{
+    headerContainer: {
         display: "flex",
     }
 });
@@ -73,7 +73,6 @@ export const Room = () => {
     const [room, setRoom] = useState(null);
     const [value, setValue] = useState('');
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
-
     useEffect(() => {
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
@@ -107,6 +106,7 @@ export const Room = () => {
         socket.on('disabledRunBtn', () => {
             setDisabledRunBtn(true);
         });
+
     }, []);
 
     const handleRun = () => {
@@ -135,36 +135,35 @@ export const Room = () => {
                 !room ? null :
                     <Fragment>
                         <div className={classes.headerContainer}>
-                        <Button onClick={handleClear}>
-                            Clear
-                        </Button>
-                        <Button disabled={disabledRunBtn} onClick={handleRun}>
-                            Run
-                        </Button>
-                        <CopyToClipboard text={`${window.location.href}`}>
-                            <Tooltip title="Copy URL">
-                                <IconButton aria-label="copy-url">
-                                    <FileCopyIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        </CopyToClipboard>
-                        <h4 className={classes.label}>Name room: {room.name}</h4>
-                        <FormControl variant="outlined" className={classes.selectInput}>
-                            <InputLabel id="language-simple-select-outlined-label">Language</InputLabel>
-                            <Select
-                                labelId="language-simple-select-outlined-label"
-                                id="language-simple-select-outlined"
-                                label="Language"
-                                fullWidth
-                                value={language}
-                                onChange={handleChangeLanguage}
-                            >
+                            <Button onClick={handleClear}>
+                                Clear
+                            </Button>
+                            <Button disabled={disabledRunBtn} onClick={handleRun}>
+                                Run
+                            </Button>
+                            <CopyToClipboard text={`${window.location.href}`}>
+                                <Tooltip title="Copy URL">
+                                    <IconButton aria-label="copy-url">
+                                        <FileCopyIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </CopyToClipboard>
+                            <FormControl variant="outlined" className={classes.selectInput}>
+                                <InputLabel id="language-simple-select-outlined-label">Language</InputLabel>
+                                <Select
+                                    labelId="language-simple-select-outlined-label"
+                                    id="language-simple-select-outlined"
+                                    label="Language"
+                                    fullWidth
+                                    value={language}
+                                    onChange={handleChangeLanguage}
+                                >
 
-                                {LANGUAGE_ARRAY.map(item =>
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
+                                    {LANGUAGE_ARRAY.map(item =>
+                                        <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
                         </div>
 
                         <div className={classes.mainContainer}>
@@ -187,6 +186,7 @@ export const Room = () => {
                                 }}
                             />
                         </div>
+
                     </Fragment>
             }
         </Fragment>
