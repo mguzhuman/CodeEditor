@@ -82,7 +82,6 @@ io.on('connection', async (socket) => {
         }
 
         request('http://localhost:8088/run', options, async (err, response, body) => {
-            console.log(body)
             let responseValue;
             if (!err) {
                 responseValue = body.stderr ? body.stderr : body.error ? body.message : body.stdout
