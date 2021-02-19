@@ -10,7 +10,6 @@ const App = () => {
     useEffect(() => {
         socket = socketConnect()
         socket.on('listRooms', (data) => {
-            console.log(data)
             setIsConnect(true);
             setRooms(data);
         })
