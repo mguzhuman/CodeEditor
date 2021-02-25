@@ -10,7 +10,7 @@ services:
     restart: always
     build: .
     ports:
-      - "80:8080"
+      - "443:8080"
     links:
       - mongobase
     networks:
@@ -20,23 +20,23 @@ services:
     env_file:
       - env.list
     environment:
-      - MONGO_USERNAME=$MONGO_USERNAME
-      - MONGO_PASSWORD=$MONGO_PASSWORD
+      - MONGO_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+      - MONGO_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
   mongobase:
     container_name: mongobase
     hostname: mongobase
     image: mongo
     restart: unless-stopped
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
     ports:
       - "27018:27017"
     volumes:
-      - mongodbdata:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - dbdata:/data/db
     networks:
       - myapp
 
 volumes:
-  mongodbdata:
-    driver: local
+  dbdata:

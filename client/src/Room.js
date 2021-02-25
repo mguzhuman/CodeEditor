@@ -76,15 +76,18 @@ export const Room = () => {
     useEffect(() => {
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
-            setValue(data.value);
-            setRoom(data);
-            setLanguage(data.language);
-            if (data.response !== "") {
-                setResponse(data.response)
+            if (data) {
+                setValue(data.value);
+                setRoom(data);
+                setLanguage(data.language);
+                if (data.response !== "") {
+                    setResponse(data.response)
+                } else {
+                    setResponse("Click on the Run button to get the result of the code execution.")
+                }
             } else {
-                setResponse("Click on the Run button to get the result of the code execution.")
+                window.location.href = '/404'
             }
-
         });
         socket.on('changeCodeClientValue', (value) => {
             setValue(value);
