@@ -11,7 +11,9 @@ const Language = require('./schemas/Language')
 const Room = require('./schemas/Room')
 const INITIALDATABASE = require('./initialData')
 const cron = require('node-cron');
-
+const MONGO_USERNAME =  process.env.MONGO_USERNAME
+const MONGO_PASSWORD = process.env.MONGO_PASSWORD
+console.log(MONGO_USERNAME,MONGO_PASSWORD,"<==== ENV ")
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({limit: "50mb"}));
@@ -126,9 +128,12 @@ io.on('connection', async (socket) => {
     });
 });
 
-mongoose.connect("mongodb://mongobase:27017/codeeditor", {
+mongoose.connect(`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongobase:27017/codeeditor`, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    // useUnifiedTopology: true,
+    reconnectTries: Number.MAX_VALUE,
+    reconnectInterval: 500,
+    connectTimeoutMS: 10000,
 }, function (err) {
     if (err) return console.log(err);
     http.listen(8080, () => {

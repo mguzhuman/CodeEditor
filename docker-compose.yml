@@ -19,10 +19,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - env.list
+    environment:
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
   mongobase:
     container_name: mongobase
     hostname: mongobase
     image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
     ports:
       - "27018:27017"
     volumes:
