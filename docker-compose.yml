@@ -10,13 +10,15 @@ services:
     restart: always
     build: .
     ports:
-      - "443:8080"
+      - "443:443"
     links:
       - mongobase
     networks:
       - myapp
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/letsencrypt/live/codetalk.pro/privkey.pem:/etc/letsencrypt/live/codetalk.pro/privkey.pem
+      - /etc/letsencrypt/live/codetalk.pro/cert.pem:/etc/letsencrypt/live/codetalk.pro/cert.pem
     env_file:
       - env.list
     environment:

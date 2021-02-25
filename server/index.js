@@ -5,8 +5,19 @@ const express = require('express')
 const app = express();
 const mongoose = require("mongoose");
 const request = require('request')
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+
+const fs = require('fs');
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/codetalk.pro/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/codetalk.pro/cert.pem', 'utf8');
+
+const credentials = {
+    key: privateKey,
+    cert: certificate,
+};
+
+const https = require('https').createServer(credentials,app);
+const io = require('socket.io')(https);
 const Language = require('./schemas/Language')
 const Room = require('./schemas/Room')
 const INITIALDATABASE = require('./initialData')
@@ -139,7 +150,7 @@ mongoose.connect(`mongodb://mongobase:27017/codeeditor`, {
     pass: MONGO_PASSWORD
 }, function (err) {
     if (err) return console.log(err);
-    http.listen(8080, () => {
+    https.listen(443, () => {
         console.log("Server start")
     });
 });

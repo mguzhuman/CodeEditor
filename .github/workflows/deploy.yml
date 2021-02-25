@@ -14,7 +14,8 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
-          MONGO_PASS: $${{ secrets.MONGO_PASS }}
+          MONGO_INITDB_ROOT_USERNAME: $${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: $${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
         with:
           source: "."
           target: "/var/www/codetalk"
@@ -25,7 +26,8 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
-          MONGO_PASS: $${{ secrets.MONGO_PASS }}
+          MONGO_INITDB_ROOT_USERNAME: $${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: $${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
           script: |
             cd /var/www/codetalk
             docker-compose stop
