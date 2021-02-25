@@ -8,6 +8,7 @@ RUN apt-get install -y nodejs
 # example to set env values:
 # docker build --build-arg NODE_ENV=env_name <path_to_dir>
 RUN npm install react-scripts -g
+
 WORKDIR /app
 COPY . /app
 
