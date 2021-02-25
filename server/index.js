@@ -18,6 +18,7 @@ app.use(bodyParser.json({limit: "50mb"}));
 app.use(busboyBodyParser())
 app.use(express.static('../client/build'));
 app.use('/room/:id', express.static('../client/build'))
+app.use(express.static(__dirname, { dotfiles: 'allow' } ));
 
 io.on('connection', async (socket) => {
     socket.on('connect', async () => {
