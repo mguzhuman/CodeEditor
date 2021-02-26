@@ -15,9 +15,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import {MenuItem} from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
-import ReactGA from "react-ga";
-//ReactGA.initialize('G-BXQYFSDRFB',{ debug: true });
-
 
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/python/python');
@@ -60,10 +57,17 @@ const useStyles = makeStyles({
     selectInput: {
         margin: 20,
         marginLeft: 50,
+        marginRight:50,
         minWidth: 200,
     },
     headerContainer: {
         display: "flex",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+    },
+    copyBlock:{
+        display: "flex",
+        alignItems: "center",
     }
 });
 
@@ -77,8 +81,7 @@ export const Room = () => {
     const [value, setValue] = useState('');
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
     useEffect(() => {
-        window.gtag('config', 'G-BXQYFSDRFB', { 'page_title': document.title, page_path: window.location.pathname + window.location.search })
-        // ReactGA.pageview(window.location.pathname + window.location.search);
+        window.gtag('config', 'G-B477HPNG3Z', { 'page_title': document.title, page_path: window.location.pathname + window.location.search })
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
             if (data) {
@@ -118,13 +121,8 @@ export const Room = () => {
     }, []);
 
     const handleRun = () => {
-        // ReactGA.event({
-        //     category: 'User',
-        //     action: 'Run code',
-        //     label: LANGUAGE_ARRAY.find(item => item.value === language).label
-        // });
         gtag('event', 'runCode', {
-            "language": LANGUAGE_ARRAY.find(item => item.value === language).label,
+            "event_label": LANGUAGE_ARRAY.find(item => item.value === language).label,
         });
         socket.emit('sendToRunCode', {value, id, language});
         setDisabledRunBtn(true);
@@ -135,10 +133,6 @@ export const Room = () => {
         setLanguage(event.target.value);
         socket.emit('changeLanguage', {roomId: id, language: event.target.value});
     };
-
-    const handleClear = () => {
-        socket.emit('clearResponse', id)
-    }
 
     const options = {
         mode: language ? (LANGUAGE_ARRAY.find(item => item.value === language).ide) : '',
@@ -151,19 +145,9 @@ export const Room = () => {
                 !room ? null :
                     <Fragment>
                         <div className={classes.headerContainer}>
-                            <Button onClick={handleClear}>
-                                Clear
-                            </Button>
-                            <Button disabled={disabledRunBtn} onClick={handleRun}>
+                            <Button disabled={disabledRunBtn} style={{ height:50 }} onClick={handleRun}>
                                 Run
                             </Button>
-                            <CopyToClipboard text={`${window.location.href}`}>
-                                <Tooltip title="Copy URL">
-                                    <IconButton aria-label="copy-url">
-                                        <FileCopyIcon/>
-                                    </IconButton>
-                                </Tooltip>
-                            </CopyToClipboard>
                             <FormControl variant="outlined" className={classes.selectInput}>
                                 <InputLabel id="language-simple-select-outlined-label">Language</InputLabel>
                                 <Select
@@ -180,6 +164,22 @@ export const Room = () => {
                                     )}
                                 </Select>
                             </FormControl>
+                            <div className={classes.copyBlock}>
+                                <CopyToClipboard text={`${ window.location.href }`}>
+                                    <Tooltip title="Copy URL">
+                                        <IconButton aria-label="copy-url">
+                                            <FileCopyIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </CopyToClipboard>
+                                <p>
+                                This room is unique. To invite other persons to <br/> the same room please copy url using copy url button.
+                                </p>
+                            </div>
+
+                            <p>
+                                On this page you can share code and talk using webcam and microphone.
+                            </p>
                         </div>
 
                         <div className={classes.mainContainer}>
