@@ -30,6 +30,8 @@ jobs:
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
           script: |
+            echo $MONGO_INITDB_ROOT_USERNAME
+            echo $MONGO_INITDB_ROOT_PASSWORD
             cd /var/www/codetalk
             docker-compose stop
             docker-compose build
