@@ -14,7 +14,9 @@ services:
   codeeditor:
     container_name: codeEditor
     restart: always
-    build: .
+    build:
+      args:
+        GA_KEY=$GA_KEY
     ports:
       - "443:443"
     links:
