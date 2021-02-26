@@ -23,13 +23,6 @@ jobs:
           source: "."
           target: "/var/www/codetalk"
       - name: Container build and run
-        with:
-          host: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.SSHKEY }}
-          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
-          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
         run: |
             echo $MONGO_INITDB_ROOT_USERNAME
             echo $MONGO_INITDB_ROOT_PASSWORD
