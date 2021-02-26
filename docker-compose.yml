@@ -36,9 +36,9 @@ services:
       - "27018:27017"
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - dbdata:/data/db
+      - dbdatamongo:/data/db
     networks:
       - myapp
 
 volumes:
-  dbdata:
+  dbdatamongo:

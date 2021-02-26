@@ -6,10 +6,10 @@ db = db.getSiblingDB('codeeditor')
 db.createUser(
     {
         user: "test-user",
-        pwd: "testpwd",
+        pwd: MONGO_PASSWORD,
         roles:[
             {
-                role: "read",
+                role: "root",
                 db:   "codeeditor"
             }
         ]
