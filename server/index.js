@@ -16,14 +16,6 @@ const credentials = {
     cert: certificate,
 };
 
-
-const http = express();
-http.get('*', function(req, res) {
-    res.redirect('https://' + req.headers.host + req.url);
-})
-http.listen(8080);
-
-
 const https = require('https').createServer(credentials,app);
 const io = require('socket.io')(https);
 const Language = require('./schemas/Language')
@@ -39,7 +31,6 @@ app.use(busboyBodyParser())
 app.use(express.static('../client/build'));
 app.use('/room/:id', express.static('../client/build'))
 app.use('*', express.static('../client/public/404.html'))
-
 
 io.on('connection', async (socket) => {
     socket.on('connect', async () => {

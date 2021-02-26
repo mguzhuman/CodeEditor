@@ -5,6 +5,12 @@ networks:
     driver: bridge
 
 services:
+  redirect:
+    container_name: redirect
+    restart: always
+    build: ./redirectServer
+    ports:
+      - "80:8080"
   codeeditor:
     container_name: codeEditor
     restart: always
