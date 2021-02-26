@@ -16,6 +16,10 @@ WORKDIR /app/client
 RUN npm install
 RUN npm run build
 
+ARG GA_KEY
+
+ENV GA_KEY $GA_KEY
+
 WORKDIR /app/server
 RUN npm install
 
