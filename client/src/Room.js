@@ -76,6 +76,7 @@ export const Room = () => {
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
     useEffect(() => {
         ReactGA.initialize('G-B477HPNG3Z');
+        ReactGA.pageview(window.location.pathname + window.location.search);
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
             if (data) {
