@@ -75,7 +75,7 @@ export const Room = () => {
     const [value, setValue] = useState('');
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
     useEffect(() => {
-        ReactGA.initialize(process.env.GA_KEY || '');
+        ReactGA.initialize('G-B477HPNG3Z');
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
             if (data) {
