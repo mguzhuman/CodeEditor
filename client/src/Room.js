@@ -16,7 +16,7 @@ import Select from "@material-ui/core/Select";
 import {MenuItem} from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import ReactGA from "react-ga";
-ReactGA.initialize('G-BXQYFSDRFB',{ debug: true });
+//ReactGA.initialize('G-BXQYFSDRFB',{ debug: true });
 
 
 require('codemirror/mode/javascript/javascript');
@@ -77,7 +77,8 @@ export const Room = () => {
     const [value, setValue] = useState('');
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
     useEffect(() => {
-        ReactGA.pageview(window.location.pathname + window.location.search);
+        window.gtag('config', 'G-BXQYFSDRFB', { 'page_title': document.title, page_path: window.location.pathname + window.location.search })
+        // ReactGA.pageview(window.location.pathname + window.location.search);
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
             if (data) {
@@ -117,10 +118,13 @@ export const Room = () => {
     }, []);
 
     const handleRun = () => {
-        ReactGA.event({
-            category: 'User',
-            action: 'Run code',
-            label: LANGUAGE_ARRAY.find(item => item.value === language).label
+        // ReactGA.event({
+        //     category: 'User',
+        //     action: 'Run code',
+        //     label: LANGUAGE_ARRAY.find(item => item.value === language).label
+        // });
+        gtag('event', 'runCode', {
+            "language": LANGUAGE_ARRAY.find(item => item.value === language).label,
         });
         socket.emit('sendToRunCode', {value, id, language});
         setDisabledRunBtn(true);
