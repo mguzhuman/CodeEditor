@@ -9,7 +9,7 @@ jobs:
       MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
       MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
       - name: Copy repository contents via scp
         uses: appleboy/scp-action@master
         env:
@@ -22,8 +22,18 @@ jobs:
         with:
           source: "."
           target: "/var/www/codetalk"
-      - name: Container build and run
-        run: |
+      - name: Executing remote command
+        uses: appleboy/ssh-action@master
+        env:
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          envs: MONGO_INITDB_ROOT_USERNAME,MONGO_INITDB_ROOT_PASSWORD
+          script: |
             echo $MONGO_INITDB_ROOT_USERNAME
             echo $MONGO_INITDB_ROOT_PASSWORD
             cd /var/www/codetalk
