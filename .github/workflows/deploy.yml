@@ -8,6 +8,7 @@ jobs:
     env:
       MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
       MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      GA_KEY: ${{secrets.GA_KEY}}
     steps:
       - uses: actions/checkout@v1
       - name: Copy repository contents via scp
@@ -19,6 +20,7 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          GA_KEY: ${{secrets.GA_KEY}}
         with:
           source: "."
           target: "/var/www/codetalk"
