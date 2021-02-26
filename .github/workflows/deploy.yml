@@ -22,14 +22,16 @@ jobs:
         with:
           source: "."
           target: "/var/www/codetalk"
-      - name: Executing remote command
+      - name: Container build and run
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
-          script: |
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          run: |
             echo $MONGO_INITDB_ROOT_USERNAME
             echo $MONGO_INITDB_ROOT_PASSWORD
             cd /var/www/codetalk
