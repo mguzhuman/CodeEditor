@@ -16,7 +16,7 @@ import Select from "@material-ui/core/Select";
 import {MenuItem} from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import ReactGA from "react-ga";
-
+ReactGA.initialize('G-BXQYFSDRFB');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/python/python');
 require('codemirror/mode/clike/clike');
@@ -75,7 +75,7 @@ export const Room = () => {
     const [value, setValue] = useState('');
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
     useEffect(() => {
-        ReactGA.initialize('G-BXQYFSDRFB');
+
         ReactGA.pageview(window.location.pathname + window.location.search);
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
