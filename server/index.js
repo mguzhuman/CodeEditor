@@ -16,6 +16,14 @@ const credentials = {
     cert: certificate,
 };
 
+
+const http = express();
+http.get('*', function(req, res) {
+    res.redirect('https://' + req.headers.host + req.url);
+})
+http.listen(8080);
+
+
 const https = require('https').createServer(credentials,app);
 const io = require('socket.io')(https);
 const Language = require('./schemas/Language')
