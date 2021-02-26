@@ -34,8 +34,8 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           envs: MONGO_INITDB_ROOT_USERNAME,MONGO_INITDB_ROOT_PASSWORD
           script: |
-            echo $MONGO_INITDB_ROOT_USERNAME
-            echo $MONGO_INITDB_ROOT_PASSWORD
+            export MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+            export MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
             cd /var/www/codetalk
             docker-compose stop
             docker-compose build
