@@ -15,6 +15,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import {MenuItem} from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
+import ReactGA from "react-ga";
 
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/python/python');
@@ -74,6 +75,7 @@ export const Room = () => {
     const [value, setValue] = useState('');
     const [response, setResponse] = useState('Click on the Run button to get the result of the code execution.');
     useEffect(() => {
+        ReactGA.initialize(process.env.GA_KEY || '');
         socket.emit('joinRoom', id);
         socket.on('joinRoomAccept', (data) => {
             if (data) {
@@ -113,6 +115,11 @@ export const Room = () => {
     }, []);
 
     const handleRun = () => {
+        ReactGA.event({
+            category: 'User',
+            action: 'Run code',
+            label: LANGUAGE_ARRAY.find(item => item.value === language).label
+        });
         socket.emit('sendToRunCode', {value, id, language});
         setDisabledRunBtn(true);
         setResponse('Wait for response ...');

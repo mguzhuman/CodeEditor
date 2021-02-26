@@ -30,6 +30,7 @@ services:
     environment:
       - MONGO_USERNAME=$MONGO_INITDB_ROOT_USERNAME
       - MONGO_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+      - GA_KEY=$GA_KEY
   mongobase:
     container_name: mongobase
     hostname: mongobase

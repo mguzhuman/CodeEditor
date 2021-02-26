@@ -27,13 +27,15 @@ jobs:
         env:
           MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
           MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          GA_KEY: ${{secrets.GA_KEY}}
         with:
           host: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
-          envs: MONGO_INITDB_ROOT_USERNAME,MONGO_INITDB_ROOT_PASSWORD
+          envs: MONGO_INITDB_ROOT_USERNAME,MONGO_INITDB_ROOT_PASSWORD,GA_KEY
           script: |
+            export GA_KEY=$GA_KEY
             export MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
             export MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
             cd /var/www/codetalk
