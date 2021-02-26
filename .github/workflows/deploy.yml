@@ -23,7 +23,6 @@ jobs:
           source: "."
           target: "/var/www/codetalk"
       - name: Container build and run
-        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
