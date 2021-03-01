@@ -3,8 +3,10 @@
 # dependencies
 /client/node_modules
 /server/node_modules
+/redirectServer/node_modules
 /client/package-lock.json
 /server/package-lock.json
+/redirectServer/package-lock.json
 /client/.eslintcache
 
 

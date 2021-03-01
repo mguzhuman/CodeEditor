@@ -32,7 +32,6 @@ app.use(express.static('../client/build'));
 app.use('/room/:id', express.static('../client/build'))
 app.use('*', express.static('../client/public/404.html'))
 
-
 io.on('connection', async (socket) => {
     socket.on('connect', async () => {
         const roomsDb = await Room.find()

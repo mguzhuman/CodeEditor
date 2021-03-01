@@ -1,6 +1,6 @@
 export const LANGUAGE_ARRAY = [
-    {label: 'Assembly', value: 'assembly',ide:''},
-    {label: 'ATS', value: 'ats',ide:''},
+    {label: 'Assembly', value: 'assembly',ide:{name: "gas", architecture: "ARM"}},
+    {label: 'ATS', value: 'ats',ide:'text/x-gas'},
     {label: 'Bash', value: 'bash',ide:''},
     {label: 'C', value: 'c',ide:'text/x-csrc'},
     {label: 'Clojure', value: 'clojure',ide:'text/x-clojure'},
