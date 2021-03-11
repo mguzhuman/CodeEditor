@@ -5,18 +5,13 @@ networks:
     driver: bridge
 
 services:
-  redirect:
-    container_name: redirect
-    restart: always
-    build: ./redirectServer
-    ports:
-      - "80:8080"
   codeeditor:
     container_name: codeEditor
     restart: always
     build: .
     ports:
       - "443:443"
+      - "80:8080"
     links:
       - mongobase
     networks:
@@ -30,6 +25,15 @@ services:
     environment:
       - MONGO_USERNAME=$MONGO_INITDB_ROOT_USERNAME
       - MONGO_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+  peerjsserver:
+    restart: always
+    container_name: peerjsserver
+    build: ./peerjsserver/
+    volumes:
+      - /etc/letsencrypt/live/codetalk.pro/privkey.pem:/etc/letsencrypt/live/codetalk.pro/privkey.pem
+      - /etc/letsencrypt/live/codetalk.pro/cert.pem:/etc/letsencrypt/live/codetalk.pro/cert.pem
+    ports:
+    - '9000:9000'
   mongobase:
     container_name: mongobase
     hostname: mongobase
