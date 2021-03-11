@@ -5,6 +5,7 @@ const express = require('express')
 const app = express();
 const mongoose = require("mongoose");
 const request = require('request')
+//const { ExpressPeerServer } = require('peer');
 
 const fs = require('fs');
 
@@ -16,7 +17,14 @@ const credentials = {
     cert: certificate,
 };
 
-const https = require('https').createServer(credentials,app);
+const http = express();
+http.get('*', function (req, res) {
+    res.redirect('https://' + req.headers.host + req.url);
+
+})
+http.listen(8080);
+
+const https = require('https').createServer(credentials, app);
 const io = require('socket.io')(https);
 const Language = require('./schemas/Language')
 const Room = require('./schemas/Room')
@@ -25,9 +33,24 @@ const cron = require('node-cron');
 const MONGO_USERNAME = process.env.MONGO_USERNAME
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD
 
+
+// const peerServer = ExpressPeerServer(https,{
+//     ssl: {
+//         key: privateKey,
+//         cert: certificate
+//     },
+// });
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(busboyBodyParser())
+// app.use('/peer', peerServer);
+//
+app.get('/', async (req, res) => {
+    const room = {date: new Date().toJSON(), name: '', language: 'javascript'};
+    const roomId = SHA256('room' + room.date).toString();
+    await createRoom(roomId, room.date, room.name, room.language);
+    res.redirect( `/room/${roomId}`);
+})
 app.use(express.static('../client/build'));
 app.use('/room/:id', express.static('../client/build'))
 app.use('*', express.static('../client/public/404.html'))
@@ -37,6 +60,7 @@ io.on('connection', async (socket) => {
         const roomsDb = await Room.find()
         socket.emit('listRooms', roomsDb);
     });
+
     const roomsDb = await Room.find()
     socket.emit('listRooms', roomsDb);
 
@@ -50,11 +74,49 @@ io.on('connection', async (socket) => {
         socket.emit('createSuccess', roomId)
     });
 
-    socket.on('joinRoom', async (roomId) => {
+    socket.on('joinRoom', async (userData) => {
+        const {roomId, userId} = userData;
         socket.join(roomId);
         const room = await Room.findOne({id: roomId})
         socket.emit('joinRoomAccept', room);
+        // socket.to(roomId).broadcast.emit('new-user-connect', userData);
+        // socket.on('disconnect', () => {
+        //     socket.to(roomId).broadcast.emit('user-disconnected', userId);
+        // });
+        // socket.on('broadcast-message', (message) => {
+        //     socket.to(roomId).broadcast.emit('new-broadcast-message', {...message, userData});
+        // });
+        // // socket.on('reconnect-user', () => {
+        // //     socket.to(roomID).broadcast.emit('new-user-connect', userData);
+        // // });
+        // socket.on('display-media', (value) => {
+        //     socket.to(roomId).broadcast.emit('display-media', {userId, value});
+        // });
+        // socket.on('user-video-off', (value) => {
+        //     socket.to(roomId).broadcast.emit('user-video-off', value);
+        //});
+
     });
+
+    socket.on('startVideo', async (userData)=>{
+        const {roomId, userId} = userData;
+        socket.to(roomId).broadcast.emit('new-user-connect', userData);
+        socket.on('disconnect', () => {
+            socket.to(roomId).broadcast.emit('user-disconnected', userId);
+        });
+        socket.on('broadcast-message', (message) => {
+            socket.to(roomId).broadcast.emit('new-broadcast-message', {...message, userData});
+        });
+        // socket.on('reconnect-user', () => {
+        //     socket.to(roomID).broadcast.emit('new-user-connect', userData);
+        // });
+        socket.on('display-media', (value) => {
+            socket.to(roomId).broadcast.emit('display-media', {userId, value});
+        });
+        socket.on('user-video-off', (value) => {
+            socket.to(roomId).broadcast.emit('user-video-off', value);
+        });
+    })
 
     socket.on('sendToRunCode', async (data) => {
         socket.to(data.id).emit('disabledRunBtn', '')
@@ -93,7 +155,6 @@ io.on('connection', async (socket) => {
                 }
             }
         }
-
         request('http://localhost:8088/run', options, async (err, response, body) => {
             let responseValue;
             if (!err) {
@@ -137,6 +198,7 @@ io.on('connection', async (socket) => {
         const rooms = await Room.find();
         io.emit('listRooms', rooms);
     });
+
 });
 
 mongoose.connect(`mongodb://mongobase:27017/codeeditor`, {
@@ -180,11 +242,16 @@ conn.on('open', () => {
         });
 });
 
+
+
 async function createRoom(id, date, name, languageName) {
     const language = await Language.findOne({label: languageName})
+    console.log('create room start')
     if (id && date && language) {
+        console.log({id,date,language})
         await Room.create({
             id, date, name: name ? name : "", language: language.label, value: language.value, response: ''
         })
+        console.log('createSuccess in func')
     }
 }

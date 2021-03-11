@@ -21,10 +21,9 @@ import {
     Link
 } from "react-router-dom";
 
-import {socket} from './App';
-import {LANGUAGE_ARRAY} from './constant';
-import {CreateAccordion} from "./CreateAccordion";
-import {Room} from "./Room";
+//import {socket} from '../App';
+import {LANGUAGE_ARRAY} from '../constant';
+import {Room} from "./Room/Room";
 
 const useStyles = makeStyles({
     table: {
@@ -49,14 +48,14 @@ export default props => {
     const rows = props.rooms;
     const classes = useStyles();
 
-    useEffect(()=>{
-        if (window.location.pathname === '/'){
-            socket.emit('create', {date: new Date().toJSON(), name:'', language:'javascript'});
-            socket.on('createSuccess',(id)=>{
-                window.location.href=`/room/${id}`
-            })
-        }
-    },[])
+    // useEffect(()=>{
+    //     // if (window.location.pathname === '/'){
+    //     //     socket.emit('create', {date: new Date().toJSON(), name:'', language:'javascript'});
+    //     //     socket.on('createSuccess',(id)=>{
+    //     //         window.location.href=`/room/${id}`
+    //     //     })
+    //     // }
+    // },[])
 
     const saveNewRoom = () => {
 
@@ -64,7 +63,7 @@ export default props => {
     }
 
     const handleDeleteItem = (id) => {
-        socket.emit('removeRoom', id);
+       // socket.emit('removeRoom', id);
     }
 
     return (

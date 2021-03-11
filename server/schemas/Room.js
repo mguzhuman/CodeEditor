@@ -9,6 +9,7 @@ const roomSchema = new Schema({
     name: {type: String},
     language: {type: String},
     response: {type: String, default: ''},
+    users: {type: [String], default: []}
 });
 
 const Room = mongoose.model('room', roomSchema);

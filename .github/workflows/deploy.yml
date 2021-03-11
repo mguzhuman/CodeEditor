@@ -1,6 +1,9 @@
 name: Deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -39,4 +42,5 @@ jobs:
             cd /var/www/codetalk
             docker-compose stop
             docker-compose build
+            docker images -q -a | xargs docker inspect --format='{{.Id}}{{range $rt := .RepoTags}} {{$rt}} {{end}}'|grep -v ':'
             docker-compose up -d
