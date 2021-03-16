@@ -23,7 +23,7 @@ class SocketConnection {
     }
 
     initPeerConnection = () => {
-        console.log(this , ' this')
+        console.log(this, ' this')
         this.myPeer = initializePeerConnection();
         if (this.myPeer) this.isPeersConnected = true;
         this.initializePeersEvents();
@@ -121,7 +121,7 @@ class SocketConnection {
                 this.removeVideo(call.metadata.id);
             });
             peers[call.metadata.id] = call;
-            console.log('setPeersListeners => peers',peers )
+            console.log('setPeersListeners => peers', peers)
         });
     }
 
@@ -145,7 +145,7 @@ class SocketConnection {
             this.removeVideo(userId);
         })
         peers[userId] = call;
-        console.log('connectToNewUser => peers',peers )
+        console.log('connectToNewUser => peers', peers)
     }
 
     boradcastMessage = (message) => {
@@ -155,7 +155,7 @@ class SocketConnection {
     }
 
     createVideo = (createObj) => {
-        console.log('createVideo',{createObj,videoContainer:this.videoContainer},  )
+        console.log('createVideo', {createObj, videoContainer: this.videoContainer},)
         if (!this.videoContainer[createObj.id]) {
             this.videoContainer[createObj.id] = {
                 ...createObj,
@@ -254,10 +254,13 @@ class SocketConnection {
 
 const initializePeerConnection = () => {
     return new Peer('', {
-         host: '/',
-        // path: 'peer',
-         port: '9000',
-        secure:true
+        host: '/',
+        port: '9000',
+        secure: true,
+        config: {'iceServers': [
+                { url: 'stun:stun.codetalk.pro:5349' },
+                { url: 'turn:turn.codetalk.pro:5349', username:"codetalkuser", credential: 'codepas2talk9' }
+            ]}
     });
 }
 
@@ -271,11 +274,11 @@ const initializeSocketConnection = () => {
 }
 
 const replaceStream = (mediaStream) => {
-    console.log('replaceStream => peers =>',peers)
+    console.log('replaceStream => peers =>', peers)
     Object.values(peers).map((peer) => {
-       // console.log('replaceStream => peers => peer',peer)
+        // console.log('replaceStream => peers => peer',peer)
         peer.peerConnection.getSenders().map((sender) => {
-           // console.log('replaceStream => peers => peer => sender',sender)
+            // console.log('replaceStream => peers => peer => sender',sender)
             if (sender.track.kind == "audio") {
                 if (mediaStream.getAudioTracks().length > 0) {
                     sender.replaceTrack(mediaStream.getAudioTracks()[0]);
@@ -319,5 +322,5 @@ const changeMediaView = (userId, status) => {
 }
 
 export function createSocketConnectionInstance(settings = {}) {
-    return  new SocketConnection(settings);
+    return new SocketConnection(settings);
 }
