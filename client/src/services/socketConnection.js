@@ -260,7 +260,8 @@ const initializePeerConnection = () => {
         config: {'iceServers': [
                 { url: 'stun:stun.codetalk.pro:5349' },
                 { url: 'turn:turn.codetalk.pro:5349', username:"codetalkuser", credential: 'codepas2talk9' }
-            ]}
+            ]},
+        debug: 3
     });
 }
 
