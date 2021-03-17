@@ -41,14 +41,17 @@ export const styles = theme => ({
     },
     roomContainer: {
         backgroundColor: 'black',
-        display: 'grid',
+        display: 'flex',
         height: '18vh',
-        gridGap: '6px 6px',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, auto))',
-        gridTemplateRows: 'repeat(auto-fit, minmax(100px, auto))',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+
         '&>*': {
             width: '100%',
             height: '18vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
         },
         '&>div>video': {
             '-webkit-transform': 'scaleX(-1)',
@@ -78,7 +81,7 @@ export const styles = theme => ({
         bottom: 0,
         position: 'relative',
         backgroundColor: 'white',
-        minWidth: 200,
+        minWidth: 130,
         maxWidth: '100%',
     },
     statusActionBtn: {

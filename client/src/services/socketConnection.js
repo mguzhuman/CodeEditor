@@ -1,7 +1,7 @@
 import openSocket from 'socket.io-client';
 import Peer from 'peerjs';
 import {toast} from 'react-toastify';
-
+import adapter from 'webrtc-adapter';
 let peers = {};
 
 class SocketConnection {
@@ -23,7 +23,6 @@ class SocketConnection {
     }
 
     initPeerConnection = () => {
-        console.log(this, ' this')
         this.myPeer = initializePeerConnection();
         if (this.myPeer) this.isPeersConnected = true;
         this.initializePeersEvents();
@@ -48,7 +47,7 @@ class SocketConnection {
         this.socket.on('new-broadcast-message', (data) => {
             this.message.push(data);
             this.settings.updateInstance('message', this.message);
-            toast.info(`${data.message.message} By ${data.userData.name}`)
+            toast(`${data.message.message} By ${data.userData.name}`,{type:'info'})
         });
         this.socket.on('display-media', (data) => {
             if (data.value) checkAndAddClass(this.getMyVideo(data.userId), 'displayMedia');
@@ -59,9 +58,6 @@ class SocketConnection {
             roomId,
         }
         this.socket.emit('joinRoom', userData);
-        // this.socket.on('user-video-off', (data:UserVideoToggle) => {
-        //     changeMediaView(data.id, data.status);
-        // });
     }
 
     initializePeersEvents =  () => {
@@ -112,31 +108,24 @@ class SocketConnection {
     }
 
     setPeersListeners = (stream) => {
-        console.warn('func start setPeersListeners')
         this.myPeer.on('call', (call) => {
-            console.warn('peer.on(call)')
             call.answer(stream);
             call.on('stream', (userVideoStream) => {
-                console.warn('call.on(stream)')
                 this.createVideo({id: call.metadata.id, stream: userVideoStream});
             });
             call.on('close', () => {
-                console.warn('call.on(close)')
                 this.removeVideo(call.metadata.id);
             });
             call.on('error', () => {
-                console.warn('call.on(error)')
                 this.removeVideo(call.metadata.id);
             });
             peers[call.metadata.id] = call;
-            console.warn('setPeersListeners => peers', peers)
         });
     }
 
     newUserConnection = (stream) => {
-        console.warn('added socket new user')
         this.socket.on('new-user-connect', (userData) => {
-            console.warn('New User Connected', userData);
+            toast(`${userData.name} connected`,{type:'info'})
             this.connectToNewUser(userData, stream);
         });
     }
@@ -144,21 +133,16 @@ class SocketConnection {
     connectToNewUser(userData, stream) {
         const {userId} = userData;
         const call = this.myPeer.call(userId, stream, {metadata: {id: this.myId}});
-        console.warn('func connection to new user',{userId, stream,obj: {metadata: {id: this.myId}}})
         call.on('stream', (userVideoStream) => {
-            console.warn('call.on(stream) == new user')
             this.createVideo({id: userId, stream: userVideoStream, userData});
         });
         call.on('close', () => {
-            console.warn('call.on(stream) == new user')
             this.removeVideo(userId);
         });
         call.on('error', () => {
-            console.warn('call.on(error) == new user')
             this.removeVideo(userId);
         })
         peers[userId] = call;
-        console.warn('connectToNewUser => peers', peers)
     }
 
     boradcastMessage = (message) => {
@@ -168,13 +152,13 @@ class SocketConnection {
     }
 
     createVideo = (createObj) => {
-        console.log('createVideo', {createObj, videoContainer: this.videoContainer},)
         if (!this.videoContainer[createObj.id]) {
             this.videoContainer[createObj.id] = {
                 ...createObj,
             };
             const roomContainer = document.getElementById('room-container');
             const videoContainer = document.createElement('div');
+            videoContainer.id= `div${createObj.id}`
             const video = document.createElement('video');
             video.srcObject = this.videoContainer[createObj.id].stream;
             video.id = createObj.id;
@@ -188,7 +172,6 @@ class SocketConnection {
     }
 
     reInitializeStream = (video, audio, type = 'userMedia') => {
-        console.log('reInitializeStream => ', {video, audio, type})
         const media = type === 'userMedia' ? this.getVideoAudioStream(video, audio) : navigator.mediaDevices.getDisplayMedia();
         return new Promise((resolve) => {
             media.then((stream) => {
@@ -210,6 +193,8 @@ class SocketConnection {
         delete this.videoContainer[id];
         const video = document.getElementById(id);
         if (video) video.remove();
+        const divVideo = document.getElementById(`div${id}`)
+        if (divVideo) divVideo.remove();
     }
 
     destoryConnection = () => {
@@ -217,7 +202,7 @@ class SocketConnection {
         myMediaTracks.forEach((track) => {
             track.stop();
         })
-        //socketInstance.socket.disconnect();
+        this.socket.emit('isDisconnect', this.myId)
         this.myPeer.destroy();
     }
 
@@ -241,28 +226,13 @@ class SocketConnection {
         const myVideo = this.getMyVideo();
         if (myVideo && !status.video) myVideo.srcObject.getVideoTracks().forEach((track) => {
             if (track.kind === 'video') {
-                // track.enabled = status.video;
-                // this.socket.emit('user-video-off', {id: this.myID, status: true});
-                // changeMediaView(this.myID, true);
                 !status.video && track.stop();
             }
         });
         else if (myVideo) {
-            // this.socket.emit('user-video-off', {id: this.myID, status: false});
-            // changeMediaView(this.myID, false);
             this.reInitializeStream(status.video, status.audio);
         }
     }
-
-    toggleAudioTrack = (status) => {
-        const myVideo = this.getMyVideo();
-        if (myVideo) myVideo.srcObject.getAudioTracks().forEach((track) => {
-            if (track.kind === 'audio')
-                track.enabled = status.audio;
-            status.audio ? this.reInitializeStream(status.video, status.audio) : track.stop();
-        });
-    }
-
 }
 
 const initializePeerConnection = () => {
@@ -275,8 +245,7 @@ const initializePeerConnection = () => {
                 { urls: 'stun:stun.codetalk.pro:5349' },
                 { urls: 'turn:turn.codetalk.pro:5349', username:"codetalkuser", credential: 'codepas2talk9' }
             ]
-        },
-        debug: 3
+        }
     });
 }
 
@@ -290,11 +259,8 @@ const initializeSocketConnection = () => {
 }
 
 const replaceStream = (mediaStream) => {
-    console.log('replaceStream => peers =>', peers)
     Object.values(peers).map((peer) => {
-        // console.log('replaceStream => peers => peer',peer)
         peer.peerConnection.getSenders().map((sender) => {
-            // console.log('replaceStream => peers => peer => sender',sender)
             if (sender.track.kind == "audio") {
                 if (mediaStream.getAudioTracks().length > 0) {
                     sender.replaceTrack(mediaStream.getAudioTracks()[0]);
@@ -314,27 +280,6 @@ const checkAndAddClass = (video, type = 'userMedia') => {
         video.classList.add('display-media');
     else
         video.classList.remove('display-media');
-}
-
-const changeMediaView = (userId, status) => {
-    const userVideoDOM = document.getElementById(userId);
-    if (status) {
-        const clientPosition = userVideoDOM.getBoundingClientRect();
-        const createdCanvas = document.createElement("SPAN");
-        createdCanvas.className = userId;
-        createdCanvas.style.position = 'absolute';
-        createdCanvas.style.left = `${clientPosition.left}px`;
-        createdCanvas.style.top = `${clientPosition.top}px`;
-        // createdCanvas.style.width = `${userVideoDOM.videoWidth}px`;
-        // createdCanvas.style.height = `${clientPosition.height}px`;
-        createdCanvas.style.width = '100%';
-        createdCanvas.style.height = '18vh';
-        createdCanvas.style.backgroundColor = 'green';
-        userVideoDOM.parentElement.appendChild(createdCanvas);
-    } else {
-        const canvasElement = document.getElementsByClassName(userId);
-        if (canvasElement[0]) canvasElement[0].remove();
-    }
 }
 
 export function createSocketConnectionInstance(settings = {}) {

@@ -103,7 +103,7 @@ io.on('connection', async (socket) => {
         socket.on('ready-connect',()=>{
             socket.to(roomId).broadcast.emit('new-user-connect', userData);
         })
-        socket.on('disconnect', () => {
+        socket.on('isDisconnect', () => {
             socket.to(roomId).broadcast.emit('user-disconnected', userId);
         });
         socket.on('broadcast-message', (message) => {
