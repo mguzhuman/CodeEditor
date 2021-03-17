@@ -64,33 +64,36 @@ class SocketConnection {
         // });
     }
 
-    initializePeersEvents = () => {
-        this.myPeer.on('open', (id) => {
+    initializePeersEvents =  () => {
+        this.myPeer.on('open',async (id) => {
             const {userDetails} = this.settings;
-            console.log(userDetails);
             this.myId = id;
             const roomId = window.location.pathname.split('/')[2];
             const userData = {
                 userId: id, roomId, ...userDetails
             }
+            await this.setNavigatorToStream();
             this.socket.emit('startVideo', userData);
-            this.setNavigatorToStream();
+            this.socket.emit('ready-connect', userData);
         });
         this.myPeer.on('error', (err) => {
             this.myPeer.reconnect();
         })
     }
 
-    setNavigatorToStream = () => {
-        this.getVideoAudioStream().then((stream) => {
-            if (stream) {
-                this.streaming = true;
-                this.settings.updateInstance('streaming', true);
-                this.createVideo({id: this.myId, stream});
-                this.setPeersListeners(stream);
-                this.newUserConnection(stream);
-            }
-        })
+    setNavigatorToStream = async () => {
+       return new Promise(((resolve, reject) => {
+           this.getVideoAudioStream().then(async (stream) => {
+               if (stream) {
+                   this.streaming = true;
+                   this.settings.updateInstance('streaming', true);
+                   await this.createVideo({id: this.myId, stream});
+                   await this.setPeersListeners(stream);
+                   await this.newUserConnection(stream);
+               }
+               resolve(true)
+           })
+       }))
     }
 
     getVideoAudioStream = (video = true, audio = true) => {
@@ -109,25 +112,31 @@ class SocketConnection {
     }
 
     setPeersListeners = (stream) => {
+        console.warn('func start setPeersListeners')
         this.myPeer.on('call', (call) => {
+            console.warn('peer.on(call)')
             call.answer(stream);
             call.on('stream', (userVideoStream) => {
+                console.warn('call.on(stream)')
                 this.createVideo({id: call.metadata.id, stream: userVideoStream});
             });
             call.on('close', () => {
+                console.warn('call.on(close)')
                 this.removeVideo(call.metadata.id);
             });
             call.on('error', () => {
+                console.warn('call.on(error)')
                 this.removeVideo(call.metadata.id);
             });
             peers[call.metadata.id] = call;
-            console.log('setPeersListeners => peers', peers)
+            console.warn('setPeersListeners => peers', peers)
         });
     }
 
     newUserConnection = (stream) => {
+        console.warn('added socket new user')
         this.socket.on('new-user-connect', (userData) => {
-            console.log('New User Connected', userData);
+            console.warn('New User Connected', userData);
             this.connectToNewUser(userData, stream);
         });
     }
@@ -135,17 +144,21 @@ class SocketConnection {
     connectToNewUser(userData, stream) {
         const {userId} = userData;
         const call = this.myPeer.call(userId, stream, {metadata: {id: this.myId}});
+        console.warn('func connection to new user',{userId, stream,obj: {metadata: {id: this.myId}}})
         call.on('stream', (userVideoStream) => {
+            console.warn('call.on(stream) == new user')
             this.createVideo({id: userId, stream: userVideoStream, userData});
         });
         call.on('close', () => {
+            console.warn('call.on(stream) == new user')
             this.removeVideo(userId);
         });
         call.on('error', () => {
+            console.warn('call.on(error) == new user')
             this.removeVideo(userId);
         })
         peers[userId] = call;
-        console.log('connectToNewUser => peers', peers)
+        console.warn('connectToNewUser => peers', peers)
     }
 
     boradcastMessage = (message) => {
@@ -257,10 +270,13 @@ const initializePeerConnection = () => {
         host: '/',
         port: '9000',
         secure: true,
-        config: {'iceServers': [
-                { url: 'stun:stun.codetalk.pro:5349' },
-                { url: 'turn:turn.codetalk.pro:5349', username:"codetalkuser", credential: 'codepas2talk9' }
-            ]}
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.codetalk.pro:5349' },
+                { urls: 'turn:turn.codetalk.pro:5349', username:"codetalkuser", credential: 'codepas2talk9' }
+            ]
+        },
+        debug: 3
     });
 }
 
