@@ -100,7 +100,9 @@ io.on('connection', async (socket) => {
 
     socket.on('startVideo', async (userData)=>{
         const {roomId, userId} = userData;
-        socket.to(roomId).broadcast.emit('new-user-connect', userData);
+        socket.on('ready-connect',()=>{
+            socket.to(roomId).broadcast.emit('new-user-connect', userData);
+        })
         socket.on('disconnect', () => {
             socket.to(roomId).broadcast.emit('user-disconnected', userId);
         });
