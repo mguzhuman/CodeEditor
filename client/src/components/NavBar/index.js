@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Toolbar } from '@material-ui/core';
 import {withStyles} from "@material-ui/core/styles";
 import {styles} from './styles'
 import cn from 'classnames'
@@ -11,9 +11,7 @@ const IndexComponent = ({classes,children}) => {
                 <div>
                     <AppBar className={cn(classes.appNavbar,'app-navbar')} position="static">
                         <Toolbar>
-                            <Typography variant="h6" className={classes.navbarTitle}>
-                                Code Talk
-                            </Typography>
+
                         </Toolbar>
                     </AppBar>
                 </div>

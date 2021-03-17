@@ -1,17 +1,16 @@
 import React, {Fragment, useEffect, useState, useRef, useLayoutEffect} from "react";
 import {withStyles} from "@material-ui/core/styles";
 import {useParams} from "react-router-dom";
-import CallIcon from '@material-ui/icons/CallEnd';
 import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import ChatIcon from '@material-ui/icons/Chat';
 import {ToastContainer} from 'react-toastify';
-//import {CircularProgress} from '@material-ui/core';
+import 'react-toastify/dist/ReactToastify.min.css'
+
 
 import {createSocketConnectionInstance} from '../../services/socketConnection'
-//import {socket} from '../../App';
 import {LANGUAGE_ARRAY} from '../../constant';
 import {Header} from "../../components/Header";
 import {CodeComponent} from "../../components/CodeComponent";
@@ -20,6 +19,7 @@ import FootBar from '../../components/Footbar'
 import ChatBox from "../../components/ChatBox";
 import UserPopup from "../../components/UserPopup";
 import cn from "classnames";
+import adapter from 'webrtc-adapter';
 
 let socket
 
@@ -48,9 +48,7 @@ const RoomComponent = ({classes}) => {
             params: {quality: 20},
             userDetails
         });
-
         socket = socketInstance.current?.socket
-        console.log(socketInstance.current)
         window.gtag('config', 'G-B477HPNG3Z', {
             'page_title': document.title,
             page_path: window.location.pathname + window.location.search
@@ -93,20 +91,7 @@ const RoomComponent = ({classes}) => {
     useEffect(() => {
         if (userDetails) {
             socketInstance.current?.setUserDetails(userDetails)
-            // socketInstance.current = createSocketConnectionInstance({
-            //     updateInstance: updateFromInstance,
-            //     params: {quality: 20},
-            //     userDetails
-            // });
-            //
-            // socket = socketInstance.current.socket
-            // console.log(socketInstance.current)
-            // window.gtag('config', 'G-B477HPNG3Z', {
-            //     'page_title': document.title,
-            //     page_path: window.location.pathname + window.location.search
-            // })
             socketInstance.current?.initPeerConnection()
-            // socket.emit('joinRoom', {id});
 
         }
     }, [userDetails]);
@@ -118,7 +103,6 @@ const RoomComponent = ({classes}) => {
     }, []);
 
     const updateFromInstance = (key, value) => {
-        console.log(key,'<======updateFromInstance key')
         if (key === 'streaming') setStreaming(value);
         if (key === 'message') setMessages([...value]);
         if (key === 'displayStream') setDisplayStream(value);
@@ -174,7 +158,10 @@ const RoomComponent = ({classes}) => {
 
     const startVideoCall = () => {
         setIsVideoCall((prevState) => {
-            if (prevState) socketInstance.current?.destoryConnection();
+            if (prevState) {
+                setMicStatus(true)
+                setCamStatus(true)
+                socketInstance.current?.destoryConnection();}
             return !prevState
         })
     }
@@ -186,6 +173,11 @@ const RoomComponent = ({classes}) => {
     }
     return (
         <Fragment>
+            <ToastContainer
+                autoClose={2000}
+                closeOnClick
+                pauseOnHover
+            />
             {
                 !room ? null :
                     <Fragment>
@@ -217,7 +209,7 @@ const RoomComponent = ({classes}) => {
                                 <UserPopup submitHandle={handleUserDetails}/>
                                 <div id="room-container" className={classes.roomContainer}/>
                                 <FootBar className="chat-footbar">
-                                    <div className={classes.footbarTitle}>Code Talk</div>
+                                    <div className={classes.footbarTitle}></div>
                                     <div className={classes.footbarWrapper}>
                                         {streaming &&
                                         <div className={cn(classes.statusActionBtn, classes.micOrCamBtn)}
@@ -253,16 +245,10 @@ const RoomComponent = ({classes}) => {
                                     socketInstance={socketInstance.current}
                                     myDetails={userDetails}
                                     messages={messages}/>
-                                <ToastContainer
-                                    autoClose={2000}
-                                    closeOnClick
-                                    pauseOnHover
-                                />
                             </Fragment> : null
                         }
                     </Fragment>
             }
-
         </Fragment>
     )
 }

@@ -1,10 +1,8 @@
 import React, {useState} from 'react';
 import {Button, Drawer, Input} from '@material-ui/core';
 import {getMessageDateOrTime} from '../../utils/helper';
-// Import Styles
 import {withStyles} from "@material-ui/core/styles";
 import {styles} from './styles';
-// Import Icons
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChatIcon from '@material-ui/icons/Chat';
 
@@ -64,9 +62,6 @@ const IndexComponent = ({myDetails,socketInstance,chatToggle,closeDrawer,message
                         })
                     }
                 </div>
-                {/* <List className="chat-drawer-list">
-
-                </List> */}
                 <div className={classes.chatDrawerInputWrapper} onKeyUp={handleSendText}>
                     <Input
                         className={classes.chatDrawerInput}
