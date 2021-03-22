@@ -8,7 +8,7 @@ export default ({}) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
 
     const handleGetStarted = async () => {
-        gtag('event', 'Get Started');
+        gtag('event', 'GetStarted');
         const response = await axios.post('/createRoom')
         console.log(response)
         window.location.href=`/room/${response.data.roomId}`
