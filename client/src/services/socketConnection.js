@@ -41,6 +41,7 @@ class SocketConnection {
             this.removeVideo(userId);
         });
         this.socket.on('disconnect', () => {
+            this.socket.emit('isDisconnect')
         });
         this.socket.on('error', (err) => {
         });
