@@ -24,6 +24,7 @@ import {
 //import {socket} from '../App';
 import {LANGUAGE_ARRAY} from '../constant';
 import {Room} from "./Room/Room";
+import LandingPage from "./LandingPage/LandingPage";
 
 const useStyles = makeStyles({
     table: {
@@ -48,15 +49,6 @@ export default props => {
     const rows = props.rooms;
     const classes = useStyles();
 
-    // useEffect(()=>{
-    //     // if (window.location.pathname === '/'){
-    //     //     socket.emit('create', {date: new Date().toJSON(), name:'', language:'javascript'});
-    //     //     socket.on('createSuccess',(id)=>{
-    //     //         window.location.href=`/room/${id}`
-    //     //     })
-    //     // }
-    // },[])
-
     const saveNewRoom = () => {
 
         return null
@@ -71,9 +63,7 @@ export default props => {
             <Switch>
                 <Route path="/room/:id" children={<Room/>}/>
                 <Route path="/">
-                    {
-                        null
-                    }
+                    <LandingPage/>
 
 
 
