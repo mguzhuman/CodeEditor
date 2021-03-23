@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import axios from 'axios';
 import './home.css'
 import {LANGUAGE_ARRAY} from "../../constant";
@@ -7,6 +7,12 @@ import banner from './banner/hero-banner.webp'
 export default ({}) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
 
+    useEffect(()=>{
+        window.gtag('config', 'G-B477HPNG3Z', {
+            'page_title': document.title,
+            page_path: window.location.pathname + window.location.search
+        })
+    })
     const handleGetStarted = async () => {
         gtag('event', 'GetStarted');
         const response = await axios.post('/createRoom')
